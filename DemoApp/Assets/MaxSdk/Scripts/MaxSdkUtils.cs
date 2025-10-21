@@ -12,7 +12,7 @@ using UnityEditor;
 
 #endif
 
-public class MaxSdkUtils
+public static class MaxSdkUtils
 {
     /// <summary>
     /// An Enum to be used when comparing two versions.
@@ -571,6 +571,16 @@ public class MaxSdkUtils
     public static bool IsValidString(string toCheck)
     {
         return !string.IsNullOrEmpty(toCheck);
+    }
+
+    /// <summary>
+    /// Check if the given array is null or empty.
+    /// </summary>
+    /// <param name="array">The array to be checked.</param>
+    /// <returns><c>true</c> if the given array is <c>null</c> or has zero length.</returns>
+    public static bool IsNullOrEmpty<T>(T[] array)
+    {
+        return array == null || array.Length == 0;
     }
 
 #if UNITY_EDITOR

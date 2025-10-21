@@ -22,8 +22,8 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         private const string AppLovinSdkKeyLink = "https://dash.applovin.com/o/account#keys";
 
         private const string UserTrackingUsageDescriptionDocsLink = "https://developer.apple.com/documentation/bundleresources/information_property_list/nsusertrackingusagedescription";
-        private const string DocumentationTermsAndPrivacyPolicyFlow = "https://developers.applovin.com/en/unity/overview/terms-and-privacy-policy-flow";
-        private const string DocumentationAdaptersLink = "https://developers.applovin.com/en/unity/preparing-mediated-networks";
+        private const string DocumentationTermsAndPrivacyPolicyFlow = "https://support.axon.ai/en/max/unity/overview/terms-and-privacy-policy-flow";
+        private const string DocumentationAdaptersLink = "https://support.axon.ai/en/max/unity/preparing-mediated-networks";
         private const string DocumentationNote = "Please ensure that integration instructions (e.g. permissions, ATS settings, etc) specific to each network are implemented as well. Click the link below for more info:";
         private const string UninstallIconExportPath = "MaxSdk/Resources/Images/uninstall_icon.png";
         private const string InfoIconExportPath = "MaxSdk/Resources/Images/info_icon.png";
@@ -238,7 +238,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
                 }
 
                 // Draw Micro SDK Partners
-                if (pluginData != null && pluginData.PartnerMicroSdks != null)
+                if (pluginData != null && !MaxSdkUtils.IsNullOrEmpty(pluginData.PartnerMicroSdks))
                 {
                     DrawCollapsibleSection(KeyShowMicroSdkPartners, "AppLovin Micro SDK Partners", DrawPartnerMicroSdks);
                 }
@@ -255,13 +255,11 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
                     DrawMediatedNetworks();
                 }
 
-#if UNITY_2019_2_OR_NEWER
                 if (!AppLovinIntegrationManager.IsPluginInPackageManager)
                 {
                     EditorGUILayout.LabelField("Unity Package Manager Migration", titleLabelStyle);
                     DrawPluginMigrationHelper();
                 }
-#endif
 
                 // Draw AppLovin Quality Service settings
                 DrawCollapsibleSection(KeyShowSdkSettings, "SDK Settings", DrawQualityServiceSettings);
@@ -706,7 +704,6 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             GUILayout.Space(10);
         }
 
-#if UNITY_2019_2_OR_NEWER
         private void DrawPluginMigrationHelper()
         {
             GUILayout.BeginHorizontal();
@@ -753,7 +750,6 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             GUILayout.Space(5);
             GUILayout.EndHorizontal();
         }
-#endif
 
         private void DrawQualityServiceSettings()
         {

@@ -31,7 +31,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         [MenuItem("AppLovin/Documentation")]
         private static void Documentation()
         {
-            Application.OpenURL("https://developers.applovin.com/en/unity/overview/integration");
+            Application.OpenURL("https://support.axon.ai/en/max/unity/overview/integration");
         }
 
         [MenuItem("AppLovin/Contact Us")]

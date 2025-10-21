@@ -9,19 +9,14 @@
 #if UNITY_IOS || UNITY_IPHONE
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using AppLovinMax.Internal;
 using UnityEditor;
 using UnityEditor.Callbacks;
-#if UNITY_2019_3_OR_NEWER
 using UnityEditor.iOS.Xcode.Extensions;
-#endif
 using UnityEditor.iOS.Xcode;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -37,9 +32,6 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
     {
         private const string OutputFileName = "AppLovinQualityServiceSetup.rb";
 
-#if !UNITY_2019_3_OR_NEWER
-        private const string UnityMainTargetName = "Unity-iPhone";
-#endif
         // Use a priority of 90 to have AppLovin embed frameworks after Pods are installed (EDM finishes installing Pods at priority 60) and before Firebase Crashlytics runs their scripts (at priority 100).
         private const int AppLovinEmbedFrameworksPriority = 90;
 
@@ -107,30 +99,29 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             webRequestConfig.Headers.Add("Content-Type", "application/json");
 
             var maxWebRequest = new MaxWebRequest(webRequestConfig);
-            AppLovinEditorCoroutine.StartCoroutine(maxWebRequest.Send(webResponse =>
+
+            var webResponse = maxWebRequest.SendSync();
+            if (!webResponse.IsSuccess)
             {
-                if (!webResponse.IsSuccess)
-                {
-                    MaxSdkLogger.UserError("AppLovin Quality Service installation failed. Failed to download script with error: " + webResponse.ErrorMessage);
-                    return;
-                }
+                MaxSdkLogger.UserError("AppLovin Quality Service installation failed. Failed to download script with error: " + webResponse.ErrorMessage);
+                return;
+            }
 
-                // Check if Ruby is installed
-                var rubyVersion = AppLovinCommandLine.Run("ruby", "--version", buildPath);
-                if (rubyVersion.ExitCode != 0)
-                {
-                    MaxSdkLogger.UserError("AppLovin Quality Service installation requires Ruby. Please install Ruby, export it to your system PATH and re-export the project.");
-                    return;
-                }
+            // Check if Ruby is installed
+            var rubyVersion = AppLovinCommandLine.Run("ruby", "--version", buildPath);
+            if (rubyVersion.ExitCode != 0)
+            {
+                MaxSdkLogger.UserError("AppLovin Quality Service installation requires Ruby. Please install Ruby, export it to your system PATH and re-export the project.");
+                return;
+            }
 
-                // Ruby is installed, run `ruby AppLovinQualityServiceSetup.rb`
-                var result = AppLovinCommandLine.Run("ruby", OutputFileName, buildPath);
+            // Ruby is installed, run `ruby AppLovinQualityServiceSetup.rb`
+            var result = AppLovinCommandLine.Run("ruby", OutputFileName, buildPath);
 
-                // Check if we have an error.
-                if (result.ExitCode != 0) MaxSdkLogger.UserError("Failed to set up AppLovin Quality Service");
+            // Check if we have an error.
+            if (result.ExitCode != 0) MaxSdkLogger.UserError("Failed to set up AppLovin Quality Service");
 
-                MaxSdkLogger.UserDebug(result.Message);
-            }));
+            MaxSdkLogger.UserDebug(result.Message);
         }
 
         [PostProcessBuild(AppLovinEmbedFrameworksPriority)]
@@ -140,13 +131,9 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             var project = new PBXProject();
             project.ReadFromFile(projectPath);
 
-#if UNITY_2019_3_OR_NEWER
             var unityMainTargetGuid = project.GetUnityMainTargetGuid();
             var unityFrameworkTargetGuid = project.GetUnityFrameworkTargetGuid();
-#else
-            var unityMainTargetGuid = project.TargetGuidByName(UnityMainTargetName);
-            var unityFrameworkTargetGuid = project.TargetGuidByName(UnityMainTargetName);
-#endif
+
             EmbedDynamicLibrariesIfNeeded(buildPath, project, unityMainTargetGuid);
 
             LocalizeUserTrackingDescriptionIfNeeded(AppLovinInternalSettings.Instance.UserTrackingUsageDescriptionDe, "de", buildPath, project, unityMainTargetGuid);
@@ -173,23 +160,11 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             var dynamicLibraryPathsToEmbed = GetDynamicLibraryPathsToEmbed(podsDirectory, buildPath);
             if (dynamicLibraryPathsToEmbed == null || dynamicLibraryPathsToEmbed.Count == 0) return;
 
-#if UNITY_2019_3_OR_NEWER
             foreach (var dynamicLibraryPath in dynamicLibraryPathsToEmbed)
             {
                 var fileGuid = project.AddFile(dynamicLibraryPath, dynamicLibraryPath);
                 project.AddFileToEmbedFrameworks(targetGuid, fileGuid);
             }
-#else
-            string runpathSearchPaths;
-            runpathSearchPaths = project.GetBuildPropertyForAnyConfig(targetGuid, "LD_RUNPATH_SEARCH_PATHS");
-            runpathSearchPaths += string.IsNullOrEmpty(runpathSearchPaths) ? "" : " ";
-
-            // Check if runtime search paths already contains the required search paths for dynamic libraries.
-            if (runpathSearchPaths.Contains("@executable_path/Frameworks")) return;
-
-            runpathSearchPaths += "@executable_path/Frameworks";
-            project.SetBuildProperty(targetGuid, "LD_RUNPATH_SEARCH_PATHS", runpathSearchPaths);
-#endif
         }
 
         /// <summary>
@@ -566,11 +541,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             var project = new PBXProject();
             project.ReadFromFile(projectPath);
 
-#if UNITY_2019_3_OR_NEWER
             var unityMainTargetGuid = project.GetUnityMainTargetGuid();
-#else
-            var unityMainTargetGuid = project.TargetGuidByName(UnityMainTargetName);
-#endif
 
             var guid = project.AddFile(AppLovinSettingsPlistFileName, AppLovinSettingsPlistFileName);
             project.AddFileToBuild(unityMainTargetGuid, guid);

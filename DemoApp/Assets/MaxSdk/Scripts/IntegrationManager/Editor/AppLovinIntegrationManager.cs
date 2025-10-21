@@ -390,9 +390,12 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
                 AppLovinPackageManager.UpdateCurrentVersions(network);
             }
 
-            foreach (var partnerMicroSdk in pluginData.PartnerMicroSdks)
+            if (pluginData.PartnerMicroSdks != null)
             {
-                AppLovinPackageManager.UpdateCurrentVersions(partnerMicroSdk);
+                foreach (var partnerMicroSdk in pluginData.PartnerMicroSdks)
+                {
+                    AppLovinPackageManager.UpdateCurrentVersions(partnerMicroSdk);
+                }
             }
 
             if (pluginData.Alerts == null) return pluginData;

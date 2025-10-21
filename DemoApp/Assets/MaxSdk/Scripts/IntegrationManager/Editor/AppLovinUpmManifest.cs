@@ -1,4 +1,3 @@
-#if UNITY_2019_2_OR_NEWER
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -189,4 +188,3 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         #endregion
     }
 }
-#endif

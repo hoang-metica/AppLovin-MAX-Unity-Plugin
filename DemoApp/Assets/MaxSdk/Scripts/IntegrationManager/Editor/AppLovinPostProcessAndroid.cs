@@ -24,11 +24,9 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
     /// </summary>
     public class AppLovinPostProcessAndroid : IPostGenerateGradleAndroidProject
     {
-#if UNITY_2019_3_OR_NEWER
         private const string PropertyAndroidX = "android.useAndroidX";
         private const string PropertyJetifier = "android.enableJetifier";
         private const string EnableProperty = "=true";
-#endif
         private const string PropertyDexingArtifactTransform = "android.enableDexingArtifactTransform";
         private const string DisableProperty = "=false";
 
@@ -70,15 +68,9 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
 
         public void OnPostGenerateGradleAndroidProject(string path)
         {
-#if UNITY_2019_3_OR_NEWER
             var rootGradleBuildFilePath = Path.Combine(path, "../build.gradle");
             var gradlePropertiesPath = Path.Combine(path, "../gradle.properties");
             var gradleWrapperPropertiesPath = Path.Combine(path, "../gradle/wrapper/gradle-wrapper.properties");
-#else
-            var rootGradleBuildFilePath = Path.Combine(path, "build.gradle");
-            var gradlePropertiesPath = Path.Combine(path, "gradle.properties");
-            var gradleWrapperPropertiesPath = Path.Combine(path, "gradle/wrapper/gradle-wrapper.properties");
-#endif
 
             UpdateGradleVersionsIfNeeded(gradleWrapperPropertiesPath, rootGradleBuildFilePath);
 
@@ -89,20 +81,13 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             {
                 var lines = File.ReadAllLines(gradlePropertiesPath);
 
-#if UNITY_2019_3_OR_NEWER
                 // Add all properties except AndroidX, Jetifier, and DexingArtifactTransform since they may already exist. We will re-add them below.
                 gradlePropertiesUpdated.AddRange(lines.Where(line => !line.Contains(PropertyAndroidX) && !line.Contains(PropertyJetifier) && !line.Contains(PropertyDexingArtifactTransform)));
-#else
-                // Add all properties except DexingArtifactTransform since it may already exist. We will re-add it below.
-                gradlePropertiesUpdated.AddRange(lines.Where(line => !line.Contains(PropertyDexingArtifactTransform)));
-#endif
             }
 
-#if UNITY_2019_3_OR_NEWER
             // Enable AndroidX and Jetifier properties
             gradlePropertiesUpdated.Add(PropertyAndroidX + EnableProperty);
             gradlePropertiesUpdated.Add(PropertyJetifier + EnableProperty);
-#endif
 
             // `DexingArtifactTransform` has been removed in Gradle 8+ which is the default Gradle version for Unity 6.
 #if !UNITY_6000_0_OR_NEWER

@@ -22,28 +22,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         {
             if (!AppLovinSettings.Instance.QualityServiceEnabled) return;
 
-#if UNITY_2019_3_OR_NEWER
-            // On Unity 2019.3+, the path returned is the path to the unityLibrary's module.
-            // The AppLovin Quality Service buildscript closure related lines need to be added to the root build.gradle file.
-            var rootGradleBuildFilePath = Path.Combine(path, "../build.gradle");
-            var shouldAddQualityServiceToDependencies = ShouldAddQualityServiceToDependencies(rootGradleBuildFilePath);
-
-            var failedToAddPlugin = false;
-            if (shouldAddQualityServiceToDependencies)
-            {
-                // Add the Quality Service Plugin to the dependencies block in the root build.gradle file
-                var buildScriptChangesAdded = AddQualityServiceBuildScriptLines(rootGradleBuildFilePath);
-                failedToAddPlugin = !buildScriptChangesAdded;
-            }
-            else
-            {
-                // Add the Quality Service Plugin to the plugin block in the root build.gradle file
-                var rootSettingsGradleFilePath = Path.Combine(path, "../settings.gradle");
-                var qualityServiceAdded = AddPluginToRootGradleBuildFile(rootGradleBuildFilePath);
-                var appLovinRepositoryAdded = AddAppLovinRepository(rootSettingsGradleFilePath);
-                failedToAddPlugin = !(qualityServiceAdded && appLovinRepositoryAdded);
-            }
-
+            var failedToAddPlugin = !AddQualityServiceToRootGradleFile(path);
             if (failedToAddPlugin)
             {
                 MaxSdkLogger.UserWarning("Failed to add AppLovin Quality Service plugin to the gradle project.");
@@ -52,12 +31,6 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
 
             // The plugin needs to be added to the application module (named launcher)
             var applicationGradleBuildFilePath = Path.Combine(path, "../launcher/build.gradle");
-#else
-            // If Gradle template is enabled, we would have already updated the plugin.
-            if (AppLovinIntegrationManager.GradleTemplateEnabled) return;
-
-            var applicationGradleBuildFilePath = Path.Combine(path, "build.gradle");
-#endif
 
             if (!File.Exists(applicationGradleBuildFilePath))
             {

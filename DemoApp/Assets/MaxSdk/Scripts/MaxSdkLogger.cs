@@ -23,7 +23,7 @@ public class MaxSdkLogger
     /// </summary>
     public static void D(string message)
     {
-        if (MaxSdk.DisableAllLogs || !MaxSdk.IsVerboseLoggingEnabled()) return;
+        if (MaxSdk.DisableAllLogs && !MaxSdk.IsVerboseLoggingEnabled()) return;
 
         Debug.Log("Debug [" + SdkTag + "] " + message);
     }
@@ -45,7 +45,7 @@ public class MaxSdkLogger
     /// </summary>
     public static void W(string message)
     {
-        if (MaxSdk.DisableAllLogs || !MaxSdk.IsVerboseLoggingEnabled()) return;
+        if (MaxSdk.DisableAllLogs && !MaxSdk.IsVerboseLoggingEnabled()) return;
 
         Debug.LogWarning("Warning [" + SdkTag + "] " + message);
     }
@@ -67,7 +67,7 @@ public class MaxSdkLogger
     /// </summary>
     public static void E(string message)
     {
-        if (MaxSdk.DisableAllLogs || !MaxSdk.IsVerboseLoggingEnabled()) return;
+        if (MaxSdk.DisableAllLogs && !MaxSdk.IsVerboseLoggingEnabled()) return;
 
         Debug.LogError("Error [" + SdkTag + "] " + message);
     }

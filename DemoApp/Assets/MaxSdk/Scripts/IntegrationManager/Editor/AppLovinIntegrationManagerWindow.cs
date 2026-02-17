@@ -640,9 +640,9 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
                 GUI.enabled = networkButtonsEnabled && isInstalled;
                 if (GUILayout.Button(new GUIContent {image = uninstallIcon, tooltip = "Uninstall"}, iconStyle))
                 {
-                    EditorUtility.DisplayProgressBar("Integration Manager", "Deleting " + network.Name + "...", 0.5f);
                     AppLovinPackageManager.RemoveNetwork(network);
-                    EditorUtility.ClearProgressBar();
+                    AppLovinPackageManager.UpdateCurrentVersions(network);
+                    UpdateShouldShowGoogleWarningIfNeeded();
                 }
 
                 GUI.enabled = true;

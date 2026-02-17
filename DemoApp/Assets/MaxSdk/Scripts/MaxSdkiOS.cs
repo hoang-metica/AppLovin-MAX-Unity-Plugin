@@ -1027,7 +1027,9 @@ public class MaxSdkiOS : MaxSdkBase
     /// <param name="parameters">A dictionary containing key-value pairs further describing this event.</param>
     public static void TrackEvent(string name, IDictionary<string, string> parameters = null)
     {
-        _MaxTrackEvent(name, Json.Serialize(parameters));
+        // Convert null to "{}" to avoid Unity sending the literal "null" to iOS.
+        var jsonString = ( parameters == null ) ? EmptyJson : Json.Serialize(parameters);
+        _MaxTrackEvent(name, jsonString);
     }
 
     #endregion

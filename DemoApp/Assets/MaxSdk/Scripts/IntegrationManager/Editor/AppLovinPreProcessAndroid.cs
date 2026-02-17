@@ -23,7 +23,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         private const string ElementNameAndroidPackage = "androidPackage";
         private const string AttributeNameSpec = "spec";
         private const string UmpDependencyPackage = "com.google.android.ump:user-messaging-platform:";
-        private const string UmpDependencyVersion = "2.1.0";
+        private const string UmpDependencyVersion = "4.0.0";
 
         public void OnPreprocessBuild(BuildReport report)
         {

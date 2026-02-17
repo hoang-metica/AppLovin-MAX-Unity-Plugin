@@ -14,6 +14,8 @@ using System.Runtime.InteropServices;
 
 public abstract class MaxSdkBase
 {
+    protected const string EmptyJson = "{}";
+
     /// <summary>
     /// This enum represents the user's geography used to determine the type of consent flow shown to the user.
     /// </summary>

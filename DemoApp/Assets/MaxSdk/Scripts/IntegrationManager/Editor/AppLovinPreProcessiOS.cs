@@ -26,7 +26,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         private const string AttributeNameName = "name";
         private const string AttributeNameVersion = "version";
         private const string UmpDependencyPod = "GoogleUserMessagingPlatform";
-        private const string UmpDependencyVersion = "~> 2.1";
+        private const string UmpDependencyVersion = "~> 3.1";
 
         private static void AddGoogleCmpDependencyIfNeeded()
         {

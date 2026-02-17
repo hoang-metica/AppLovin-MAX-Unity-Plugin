@@ -263,6 +263,9 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         /// otherwise, deletes the adapter from the Assets folder.</param>
         internal static void DeleteDuplicateAdapter(Network network, bool keepAssetsAdapter)
         {
+            // Skip duplicate removal logic for our plugin.
+            if (network.Name.Equals("APPLOVIN_NETWORK")) return;
+
             if (keepAssetsAdapter)
             {
                 var appLovinManifest = AppLovinUpmManifest.Load();

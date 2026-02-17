@@ -73,9 +73,14 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             "MaxSdk/Version.md.meta",
 
             // The alert_icon.png has been renamed to error_icon.png.
-            "MaxSdk/Resources/Images/alert_icon.png"
+            "MaxSdk/Resources/Images/alert_icon.png",
+            "MaxSdk/Resources/Images/alert_icon.png.meta",
 
-            // TODO: Add MaxTargetingData and MaxUserSegment when the plugin has enough traction.
+            // `TargetingData` has been removed and we no longer set `UserSegment` through the Unity Plugin.
+            "MaxSdk/Scripts/MaxUserSegment.cs",
+            "MaxSdk/Scripts/MaxUserSegment.cs.meta",
+            "MaxSdk/Scripts/MaxTargetingData.cs",
+            "MaxSdk/Scripts/MaxTargetingData.cs.meta"
         };
 
         static AppLovinInitialize()

@@ -812,7 +812,9 @@ public class MaxSdkAndroid : MaxSdkBase
     /// <param name="parameters">A dictionary containing key-value pairs further describing this event.</param>
     public static void TrackEvent(string name, IDictionary<string, string> parameters = null)
     {
-        MaxUnityPluginClass.CallStatic("trackEvent", name, Json.Serialize(parameters));
+        // Convert null to "{}" to avoid Unity sending the literal "null" to Android.
+        var jsonString = ( parameters == null ) ? EmptyJson : Json.Serialize(parameters);
+        MaxUnityPluginClass.CallStatic("trackEvent", name, jsonString);
     }
 
     #endregion

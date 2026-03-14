@@ -97,6 +97,10 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         public string Title;
         public string Message;
         public string Url;
+        public string MinimumPluginVersion;
+        public string MaximumPluginVersion;
+        public string MinimumUnityVersion;
+        public string MaximumUnityVersion;
 
         public Severity Severity;
 
@@ -118,6 +122,13 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
                     Severity = Severity.Info;
                     break;
             }
+        }
+
+        public bool ShouldShowAlert()
+        {
+            var pluginVersionValid = MaxSdkUtils.IsVersionInRange(MaxSdk.Version, MinimumPluginVersion, MaximumPluginVersion);
+            var unityVersionValid = MaxSdkUtils.IsVersionInRange(Application.unityVersion, MinimumUnityVersion, MaximumUnityVersion);
+            return pluginVersionValid && unityVersionValid;
         }
     }
 

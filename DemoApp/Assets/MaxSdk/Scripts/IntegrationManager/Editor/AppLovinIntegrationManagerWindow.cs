@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -223,17 +224,21 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
                 DrawPluginDetails();
 
                 // Draw alerts
-                if (pluginData != null && pluginData.Alerts != null && pluginData.Alerts.Length > 0)
+                if (pluginData != null && pluginData.Alerts != null)
                 {
-                    EditorGUILayout.BeginHorizontal();
-                    var showAlertDetails = DrawExpandCollapseButton(KeyShowAlerts);
-                    EditorGUILayout.LabelField("Alerts", titleLabelStyle, GUILayout.Width(45));
-                    DrawAlertCount();
-                    GUILayout.FlexibleSpace();
-                    EditorGUILayout.EndHorizontal();
-                    if (showAlertDetails)
+                    var alertsToShow = pluginData.Alerts.Where(alert => alert.ShouldShowAlert()).ToList();
+                    if (alertsToShow.Count > 0)
                     {
-                        DrawAlerts();
+                        EditorGUILayout.BeginHorizontal();
+                        var showAlertDetails = DrawExpandCollapseButton(KeyShowAlerts);
+                        EditorGUILayout.LabelField("Alerts", titleLabelStyle, GUILayout.Width(45));
+                        DrawAlertCount(alertsToShow);
+                        GUILayout.FlexibleSpace();
+                        EditorGUILayout.EndHorizontal();
+                        if (showAlertDetails)
+                        {
+                            DrawAlerts(alertsToShow);
+                        }
                     }
                 }
 
@@ -386,13 +391,13 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         /// <summary>
         /// Draw the number of each alert type next to the alert section header.
         /// </summary>
-        private void DrawAlertCount()
+        private void DrawAlertCount(List<Alert> alerts)
         {
             if (pluginData == null) return;
 
-            var infoAlertsCount = pluginData.Alerts.Count(alert => alert.Severity == Severity.Info);
-            var warningAlertsCount = pluginData.Alerts.Count(alert => alert.Severity == Severity.Warning);
-            var errorAlertsCount = pluginData.Alerts.Count(alert => alert.Severity == Severity.Error);
+            var infoAlertsCount = alerts.Count(alert => alert.Severity == Severity.Info);
+            var warningAlertsCount = alerts.Count(alert => alert.Severity == Severity.Warning);
+            var errorAlertsCount = alerts.Count(alert => alert.Severity == Severity.Error);
 
             GUILayout.Label(infoIcon, GUILayout.Width(20), GUILayout.Height(20));
             EditorGUILayout.LabelField(AlertCountToString(infoAlertsCount), GUILayout.Width(20));
@@ -405,24 +410,24 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         /// <summary>
         /// Draw the list of alerts grouped by severity.
         /// </summary>
-        private void DrawAlerts()
+        private void DrawAlerts(List<Alert> alerts)
         {
             GUILayout.BeginHorizontal();
             GUILayout.Space(10);
             using (new EditorGUILayout.VerticalScope("box"))
             {
-                DrawAlertsOfType(Severity.Error);
-                DrawAlertsOfType(Severity.Warning);
-                DrawAlertsOfType(Severity.Info);
+                DrawAlertsOfType(alerts, Severity.Error);
+                DrawAlertsOfType(alerts, Severity.Warning);
+                DrawAlertsOfType(alerts, Severity.Info);
             }
 
             GUILayout.Space(5);
             GUILayout.EndHorizontal();
         }
 
-        private void DrawAlertsOfType(Severity severity)
+        private void DrawAlertsOfType(List<Alert> alerts, Severity severity)
         {
-            var alertsOfType = pluginData.Alerts.Where(alert => alert.Severity == severity).ToList();
+            var alertsOfType = alerts.Where(alert => alert.Severity == severity).ToList();
             foreach (var alert in alertsOfType)
             {
                 DrawAlert(alert);

@@ -488,6 +488,13 @@ public static class MaxSdkUtils
         }
     }
 
+    public static bool IsVersionInRange(string currentVersion, string minVersion, string maxVersion)
+    {
+        var greaterThanOrEqualToMin = string.IsNullOrEmpty(minVersion) || MaxSdkUtils.CompareVersions(currentVersion, minVersion) != MaxSdkUtils.VersionComparisonResult.Lesser;
+        var lessThanOrEqualToMax = string.IsNullOrEmpty(maxVersion) || MaxSdkUtils.CompareVersions(currentVersion, maxVersion) != MaxSdkUtils.VersionComparisonResult.Greater;
+        return greaterThanOrEqualToMin && lessThanOrEqualToMax;
+    }
+
     /// <summary>
     /// Compares its two arguments for order.  Returns <see cref="VersionComparisonResult.Lesser"/>, <see cref="VersionComparisonResult.Equal"/>,
     /// or <see cref="VersionComparisonResult.Greater"/> as the first version is less than, equal to, or greater than the second.

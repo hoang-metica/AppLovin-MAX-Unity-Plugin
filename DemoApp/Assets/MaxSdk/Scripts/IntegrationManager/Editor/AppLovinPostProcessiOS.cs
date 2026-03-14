@@ -284,13 +284,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             var currentIosVersion = network.CurrentVersions.Ios;
             if (string.IsNullOrEmpty(currentIosVersion)) return false;
 
-            var minIosVersion = libraryToEmbed.MinVersion;
-            var maxIosVersion = libraryToEmbed.MaxVersion;
-
-            var greaterThanOrEqualToMinVersion = string.IsNullOrEmpty(minIosVersion) || MaxSdkUtils.CompareVersions(currentIosVersion, minIosVersion) != MaxSdkUtils.VersionComparisonResult.Lesser;
-            var lessThanOrEqualToMaxVersion = string.IsNullOrEmpty(maxIosVersion) || MaxSdkUtils.CompareVersions(currentIosVersion, maxIosVersion) != MaxSdkUtils.VersionComparisonResult.Greater;
-
-            return greaterThanOrEqualToMinVersion && lessThanOrEqualToMaxVersion;
+            return MaxSdkUtils.IsVersionInRange(currentIosVersion, libraryToEmbed.MinVersion, libraryToEmbed.MaxVersion);
         }
 
         private static List<string> GetDynamicLibraryPathsInProjectToEmbed(string podsDirectory, List<string> dynamicLibrariesToEmbed)

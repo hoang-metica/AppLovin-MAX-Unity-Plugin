@@ -27,8 +27,6 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         private const string PropertyAndroidX = "android.useAndroidX";
         private const string PropertyJetifier = "android.enableJetifier";
         private const string EnableProperty = "=true";
-        private const string PropertyDexingArtifactTransform = "android.enableDexingArtifactTransform";
-        private const string DisableProperty = "=false";
 
         private const string KeyMetaDataAppLovinVerboseLoggingOn = "applovin.sdk.verbose_logging";
         private const string KeyMetaDataGoogleApplicationId = "com.google.android.gms.ads.APPLICATION_ID";
@@ -82,18 +80,12 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
                 var lines = File.ReadAllLines(gradlePropertiesPath);
 
                 // Add all properties except AndroidX, Jetifier, and DexingArtifactTransform since they may already exist. We will re-add them below.
-                gradlePropertiesUpdated.AddRange(lines.Where(line => !line.Contains(PropertyAndroidX) && !line.Contains(PropertyJetifier) && !line.Contains(PropertyDexingArtifactTransform)));
+                gradlePropertiesUpdated.AddRange(lines.Where(line => !line.Contains(PropertyAndroidX) && !line.Contains(PropertyJetifier)));
             }
 
             // Enable AndroidX and Jetifier properties
             gradlePropertiesUpdated.Add(PropertyAndroidX + EnableProperty);
             gradlePropertiesUpdated.Add(PropertyJetifier + EnableProperty);
-
-            // `DexingArtifactTransform` has been removed in Gradle 8+ which is the default Gradle version for Unity 6.
-#if !UNITY_6000_0_OR_NEWER
-            // Disable dexing using artifact transform (it causes issues for ExoPlayer with Gradle plugin 3.5.0+)
-            gradlePropertiesUpdated.Add(PropertyDexingArtifactTransform + DisableProperty);
-#endif
 
             try
             {

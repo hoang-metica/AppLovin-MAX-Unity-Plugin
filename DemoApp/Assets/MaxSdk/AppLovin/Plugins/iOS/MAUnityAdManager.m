@@ -1987,6 +1987,8 @@ static ALUnityBackgroundCallback backgroundCallback;
 
 - (NSString *)requestLatencyMillisFromRequestLatency:(NSTimeInterval)requestLatency
 {
+    if ( requestLatency == -1 ) return @"-1";
+    
     // Convert latency from seconds to milliseconds to match Android.
     long requestLatencyMillis = requestLatency * 1000;
     return @(requestLatencyMillis).stringValue;
